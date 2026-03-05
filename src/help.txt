@@ -1,0 +1,135 @@
+//---------------
+base64 kya hai ?
+//---------------
+file => binary => base64 => String
+ye ek tarika hai jisse hum file(img,text,document) ko binary me convert karte hai
+ye 012313413414 6bit pe value ko devide karta hai [012313 413414] aise
+ye hume reader.result me mile ga 
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAA..." />
+File (Image, Audio) 
+        ↓  [read as bytes]
+Binary Data (0s & 1s)  <-- internal step
+        ↓  [Base64 encode]
+Base64 String (Text Safe)  <-- reader.result
+        ↓
+Use in <img src="..."> or API
+
+
+
+//---------------
+filebuffer() kya hai Q use karte hai ?
+//---------------
+ye ek builtin function hota hai web api ke pass 
+ye direct baat chit karne ke kaam aata hai bina backend me bheje ya access karne 
+me ye ek api hai jo brower pe files ko read karne ki ability deta hai
+Ye file ko JavaScript me read karne ke liye use hota hai bina backend pe bheje.
+Iska use browser me client-side files ko read karne ke liye hota hai, jaise: images, text files, audio, etc.
+Ye asynchronous hota hai → matlab file reading background me hoti hai
+aur complete hone par event trigger hota hai.
+======why?======
+Hum user ki local file ko directly read kar sakte hain (without uploading backend).
+File ko Base64 ki help se  Binary String me convert kar sakte hain
+//---------------
+reader.onloadend kya hai ?
+//---------------
+basically ye File read khatam hone par (success ya error dono me) chalta hai 
+Final cleanup ya state update ke liye mostly useful hota 
+//---------------
+reader.onloadend kya hai ?
+//---------------
+reader.readAsDataURL(file); // file ko data URL me read karna
+yahi line jo hai file ko aaye huwe img text ko read karta hai 
+iske complete hone ke baad  tab  reader.onloadend trigger hota hai ye callback hai
+ye (iske ander ye procee hota h Base64)complete hone kr baad onloadend 
+======example in code ?======
+import React, { useState } from 'react';
+
+const FileReaderExample = () => {
+  const [imagePreview, setImagePreview] = useState(null);
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        // Base64 result milta hai
+        setImagePreview(reader.result);
+      };
+
+      reader.readAsDataURL(file);  // File ko Base64 me convert karo
+    }
+  };
+
+  return (
+    <div className="p-4">
+      <h1 className="text-lg font-bold mb-4">Image Preview using FileReader</h1>
+
+      <input type="file" accept="image/*" onChange={handleFileChange} />
+
+      {imagePreview && (
+        <img src={imagePreview} alt="Preview" className="mt-4 h-48 w-48 object-cover border" />
+      )}
+    </div>
+  );
+};
+
+export default FileReaderExample;
+======example khatam huwa?======
+//=----------------
+new Image() Kya Hai?
+//=----------------
+  const img = new Image(); 
+Image ek built-in JavaScript constructor hai jo naya HTML <img> element create karta hai.
+Ye DOM me dynamically images create karne ke liye use hota hai.
+Equivalent:
+const img = document.createElement('img');
+=====URL.createObjectURL=====
+ const url = URL.createObjectURL(file);
+  console.log("Object URL:", url);
+File object: File {name: "myImage.png", lastModified: 1694092800000, size: 23456, type: "image/png"}
+
+
+
+
+
+
+// const [image, setImage] = useState(null);
+  // const [visibleImg, setVisibleImg] = useState(null);
+  // const [compressedImage, setCompressedImage] = useState(null);
+  // const [quality, setQuality] = useState(0.7);
+  // const [format, setFormat] = useState('image/jpeg');
+  // const [OrignalSize,setOrignalSize]=useState(0);
+  // const [compressedSize,setCompressedSize]=useState(0);
+
+  // const handleImageUpload = (event) => {
+  //   console.log(event.target.files);
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     setImage(URL.createObjectURL(file));
+  //     setOrignalSize((file.size / 1024).toFixed(2)); // Size in KB
+  //     setVisible(true);
+  //     compressImage(file);
+  //   }
+  //  };
+  //  const compressImage = (file) => {
+  //   if(!file) return;
+  //   const imageElement = new Image();
+  //   imageElement.src = URL.createObjectURL(file);
+  //   imageElement.onload = (e) => {
+  //     const canvas = document.createElement('canvas');
+  //     const ctx = canvas.getContext('2d');
+  //     canvas.width = e.target.width;
+  //     canvas.height = e.target.height;
+  //     ctx.drawImage(imageElement, 0, 0, canvas.width, canvas.height);
+  //     canvas.toBlob(
+  //       (blob) => {
+  //         setCompressedImage(URL.createObjectURL(blob));
+  //         setCompressedSize((blob.size / 1024).toFixed(2)); // Size in KB
+  //       },
+  //       format,
+  //       quality
+  //     );
+  //   };
+  //  };
